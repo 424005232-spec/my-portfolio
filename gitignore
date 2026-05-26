@@ -1,0 +1,28 @@
+# System Files
+.DS_Store
+Thumbs.db
+
+# Log Files
+*.log
+
+# IDE & Editor Folders
+.vscode/
+.idea/
+*.suo
+*.user
+
+# PHP & Server
+*.env
+config.php
+
+# XAMPP / Local Server
+/xampp/
+
+# Node (if used)
+node_modules/
+npm-debug.log
+
+# Temporary Files
+*.tmp
+*.temp
+*.swp
