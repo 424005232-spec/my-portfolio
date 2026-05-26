@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevFolio — Web Dev Final Project</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+  <style>
+    /* ===== CSS CUSTOM PROPERTIES — Bootstrap Override ===== */
+    :root {
+      --bs-primary:       #e8ff47;
+      --bs-primary-rgb:   232, 255, 71;
+      --bs-body-bg:       #0a0a0a;
+      --bs-body-color:    #f0f0f0;
+      --bs-font-size-base: 1rem;
+
+      /* Custom palette */
+      --clr-bg:       #0a0a0a;
+      --clr-bg2:      #111111;
+      --clr-accent:   #e8ff47;
+      --clr-accent2:  #ff6b35;
+      --clr-muted:    #555;
+      --clr-border:   #1e1e1e;
+      --clr-card:     #121212;
+      --clr-text:     #f0f0f0;
+      --clr-sub:      #888;
+
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+
+      --radius: 4px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--clr-bg);
+      color: var(--clr-text);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--clr-accent); color: #000; }
+
+    /* ===== NOISE OVERLAY ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--clr-bg); }
+    ::-webkit-scrollbar-thumb { background: var(--clr-accent); border-radius: 2px; }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3, h4, h5 { font-family: var(--font-display); letter-spacing: 0.02em; line-height: 1.1; }
+    .mono { font-family: var(--font-mono); font-size: 0.8em; }
+    .accent { color: var(--clr-accent); }
+    .accent2 { color: var(--clr-accent2); }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: rgba(10,10,10,0.85) !important;
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--clr-border);
+      padding: 1rem 0;
+      transition: all var(--transition);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .navbar.scrolled {
+      padding: 0.6rem 0;
+      border-bottom-color: var(--clr-accent);
+    }
+    .navbar-brand {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--clr-text) !important;
+      letter-spacing: 0.1em;
+    }
+    .navbar-brand span { color: var(--clr-accent); }
+    .navbar-nav .nav-link {
+      color: var(--clr-sub) !important;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem !important;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .navbar-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 1rem; right: 1rem;
+      height: 1px;
+      background: var(--clr-accent);
+      transform: scaleX(0);
+      transition: transform var(--transition);
+    }
+    .navbar-nav .nav-link:hover { color: var(--clr-accent) !important; }
+    .navbar-nav .nav-link:hover::after { transform: scaleX(1); }
+    .navbar-toggler {
+      border: 1px solid var(--clr-border) !important;
+      padding: 0.4rem 0.7rem;
+    }
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--clr-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--clr-border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.4;
+    }
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(232,255,71,0.07) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      pointer-events: none;
+    }
+    .hero-glow-2 {
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 70%);
+      bottom: 0; left: 0;
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px; height: 1px;
+      background: var(--clr-accent);
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 10vw, 9rem);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.25s forwards;
+    }
+    .hero-title .line-2 {
+      color: var(--clr-accent);
+      -webkit-text-stroke: 0px;
+      display: block;
+    }
+    .hero-title .line-3 {
+      color: transparent;
+      -webkit-text-stroke: 1px #444;
+      display: block;
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--clr-sub);
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.4s forwards;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.55s forwards;
+    }
+    .btn-primary-custom {
+      background: var(--clr-accent);
+      color: #000;
+      border: none;
+      padding: 0.85rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: var(--radius);
+      transition: all var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary-custom:hover {
+      background: #fff;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(232,255,71,0.3);
+    }
+    .btn-outline-custom {
+      background: transparent;
+      color: var(--clr-text);
+      border: 1px solid var(--clr-border);
+      padding: 0.85rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: var(--radius);
+      transition: all var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-outline-custom:hover {
+      border-color: var(--clr-accent);
+      color: var(--clr-accent);
+      transform: translateY(-2px);
+    }
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--clr-border);
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.7s forwards;
+    }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--clr-accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--clr-sub);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .hero-badge {
+      position: absolute;
+      right: 5%;
+      bottom: 15%;
+      width: 140px; height: 140px;
+      border: 1px solid var(--clr-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      animation: spin 20s linear infinite;
+      opacity: 0.5;
+    }
+    .hero-badge span {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--clr-sub);
+      line-height: 1.8;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== SECTION BASE ===== */
+    section { padding: 100px 0; }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--clr-border);
+    }
+    .section-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      color: var(--clr-sub);
+      max-width: 540px;
+      font-size: 1rem;
+    }
+
+    /* ===== ABOUT ===== */
+    #about { background: var(--clr-bg2); }
+    .about-visual {
+      position: relative;
+    }
+    .about-img-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    .about-img-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 16px; left: 16px;
+      right: -16px; bottom: -16px;
+      border: 1px solid var(--clr-accent);
+      border-radius: var(--radius);
+      z-index: 0;
+    }
+    .about-img-placeholder {
+      width: 100%;
+      aspect-ratio: 4/5;
+      background: var(--clr-card);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .about-img-placeholder::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(232,255,71,0.04) 0%, transparent 50%);
+    }
+    .about-img-icon {
+      font-size: 5rem;
+      color: var(--clr-border);
+      margin-bottom: 1rem;
+    }
+    .about-img-text {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--clr-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .about-skills { margin-top: 2rem; }
+    .skill-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .skill-name {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--clr-text);
+    }
+    .skill-bar-wrap {
+      width: 140px;
+      height: 2px;
+      background: var(--clr-border);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .skill-bar {
+      height: 100%;
+      background: var(--clr-accent);
+      border-radius: 1px;
+      width: 0;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .skill-pct {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--clr-sub);
+      width: 36px;
+      text-align: right;
+    }
+
+    /* ===== PROJECTS (CARDS) ===== */
+    #projects { background: var(--clr-bg); }
+    .project-card {
+      background: var(--clr-card);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      height: 100%;
+    }
+    .project-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--clr-accent);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(232,255,71,0.1);
+    }
+    .card-img-area {
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-img-bg {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      transition: transform var(--transition);
+    }
+    .project-card:hover .card-img-bg { transform: scale(1.05); }
+    .card-img-bg.bg1 { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+    .card-img-bg.bg2 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+    .card-img-bg.bg3 { background: linear-gradient(135deg, #1a0a00, #3d1a00); }
+    .card-tag {
+      position: absolute;
+      top: 12px; left: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid var(--clr-border);
+      color: var(--clr-accent);
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+    }
+    .card-body-custom {
+      padding: 1.5rem;
+    }
+    .card-number {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--clr-muted);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+    }
+    .card-title-custom {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: var(--clr-text);
+      margin-bottom: 0.6rem;
+      transition: color var(--transition);
+    }
+    .project-card:hover .card-title-custom { color: var(--clr-accent); }
+    .card-desc {
+      color: var(--clr-sub);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .card-footer-custom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--clr-border);
+    }
+    .card-tech {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .tech-pill {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.55rem;
+      border: 1px solid var(--clr-border);
+      border-radius: 100px;
+      color: var(--clr-sub);
+    }
+    .card-link {
+      color: var(--clr-accent);
+      font-size: 1.1rem;
+      transition: transform var(--transition);
+      display: block;
+    }
+    .card-link:hover { transform: translate(3px, -3px); }
+
+    /* ===== SERVICES ===== */
+    #services { background: var(--clr-bg2); }
+    .service-item {
+      border-bottom: 1px solid var(--clr-border);
+      padding: 2rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 2rem;
+      transition: all var(--transition);
+      cursor: default;
+    }
+    .service-item:hover { padding-left: 1rem; }
+    .service-item:hover .service-icon { background: var(--clr-accent); color: #000; }
+    .service-icon {
+      width: 52px; height: 52px;
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      transition: all var(--transition);
+      color: var(--clr-accent);
+    }
+    .service-num {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--clr-muted);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.3rem;
+    }
+    .service-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+      color: var(--clr-text);
+    }
+    .service-desc { color: var(--clr-sub); font-size: 0.9rem; }
+
+    /* ===== TEAM ===== */
+    #team { background: var(--clr-bg); }
+    .team-card {
+      background: var(--clr-card);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: all var(--transition);
+      height: 100%;
+    }
+    .team-card:hover {
+      border-color: var(--clr-accent);
+      transform: translateY(-5px);
+    }
+    .team-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: #000;
+      background: var(--clr-accent);
+      position: relative;
+    }
+    .team-avatar::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1px solid rgba(232,255,71,0.3);
+    }
+    .team-role {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      margin-bottom: 0.4rem;
+    }
+    .team-name {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .team-bio { font-size: 0.85rem; color: var(--clr-sub); }
+
+    /* ===== CONTACT MODAL TRIGGER ===== */
+    #contact { background: var(--clr-bg2); }
+    .contact-cta-box {
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      padding: 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-cta-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(232,255,71,0.04) 0%, transparent 70%);
+    }
+    .contact-big-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      color: var(--clr-text);
+    }
+    .contact-big-title span { color: var(--clr-accent); }
+    .contact-sub {
+      color: var(--clr-sub);
+      font-size: 1rem;
+      max-width: 440px;
+      margin: 0 auto 2.5rem;
+    }
+    .contact-info-row {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--clr-border);
+    }
+    .contact-info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--clr-sub);
+    }
+    .contact-info-item i { color: var(--clr-accent); }
+
+    /* ===== MODAL ===== */
+    .modal-content {
+      background: #111;
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      color: var(--clr-text);
+    }
+    .modal-header {
+      border-bottom: 1px solid var(--clr-border);
+      padding: 1.5rem 2rem;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--clr-text);
+    }
+    .btn-close { filter: invert(1); opacity: 0.5; }
+    .btn-close:hover { opacity: 1; }
+    .modal-body { padding: 2rem; }
+    .modal-footer {
+      border-top: 1px solid var(--clr-border);
+      padding: 1.25rem 2rem;
+    }
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--clr-sub);
+      margin-bottom: 0.4rem;
+    }
+    .form-control, .form-select {
+      background: var(--clr-bg);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      color: var(--clr-text);
+      font-family: var(--font-body);
+      padding: 0.75rem 1rem;
+      transition: all var(--transition);
+    }
+    .form-control:focus, .form-select:focus {
+      background: var(--clr-bg);
+      border-color: var(--clr-accent);
+      color: var(--clr-text);
+      box-shadow: 0 0 0 3px rgba(232,255,71,0.1);
+    }
+    .form-control.is-invalid { border-color: #ff4444; }
+    .form-control.is-valid { border-color: var(--clr-accent); }
+    .invalid-feedback { font-family: var(--font-mono); font-size: 0.7rem; color: #ff6b6b; }
+    .valid-feedback { font-family: var(--font-mono); font-size: 0.7rem; color: var(--clr-accent); }
+    textarea.form-control { resize: vertical; min-height: 120px; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #050505;
+      border-top: 1px solid var(--clr-border);
+      padding: 2.5rem 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--clr-text);
+    }
+    .footer-brand span { color: var(--clr-accent); }
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--clr-muted);
+      letter-spacing: 0.08em;
+    }
+    .footer-links { display: flex; gap: 1.25rem; }
+    .footer-links a {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--clr-sub);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--clr-accent); }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== TICKER ===== */
+    .ticker-wrap {
+      background: var(--clr-accent);
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0.75rem 0;
+    }
+    .ticker-track {
+      display: inline-flex;
+      gap: 0;
+      animation: ticker 30s linear infinite;
+    }
+    .ticker-item {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: #000;
+      letter-spacing: 0.1em;
+      padding: 0 2rem;
+    }
+    .ticker-dot {
+      color: rgba(0,0,0,0.3);
+    }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 768px) {
+      .hero-badge { display: none; }
+      .hero-stats { flex-direction: column; gap: 1.2rem; }
+      .contact-cta-box { padding: 2rem 1.25rem; }
+      .service-item { flex-direction: column; gap: 1rem; }
+      .skill-bar-wrap { width: 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar navbar-expand-lg" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="#home">DEV<span>FOLIO</span></a>
+      <button class="navbar-toggler" type="button"
+        data-bs-toggle="collapse" data-bs-target="#navMenu"
+        aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="home">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow-2"></div>
+    <div class="container position-relative">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <p class="hero-eyebrow">BSIT 2.1 — WDF 2025–2026 — Group Portfolio</p>
+          <h1 class="hero-title">
+            WE BUILD<br>
+            <span class="line-2">THE WEB.</span>
+            <span class="line-3">FOR EVERYONE.</span>
+          </h1>
+          <p class="hero-sub">A full-stack portfolio built with Bootstrap 5, Git version control, and PHP back-end — crafted by five developers who turned theory into product.</p>
+          <div class="hero-cta">
+            <a href="#projects" class="btn-primary-custom">
+              <i class="bi bi-arrow-down"></i> View Our Work
+            </a>
+            <button class="btn-outline-custom" data-bs-toggle="modal" data-bs-target="#contactModal">
+              <i class="bi bi-envelope"></i> Get In Touch
+            </button>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <div class="stat-num">5</div>
+              <div class="stat-label">Developers</div>
+            </div>
+            <div>
+              <div class="stat-num">3</div>
+              <div class="stat-label">Weeks Built</div>
+            </div>
+            <div>
+              <div class="stat-num">01</div>
+              <div class="stat-label">Live Product</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-badge">
+      <span>Bootstrap 5 &nbsp;·&nbsp; PHP &nbsp;·&nbsp; Git &nbsp;·&nbsp; GitHub Pages &nbsp;·&nbsp;</span>
+    </div>
+  </section>
+
+  <!-- ===== TICKER ===== -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span class="ticker-item">Bootstrap 5 <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">PHP Back-End <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Git & GitHub <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Responsive Design <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Form Validation <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">GitHub Pages <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">CSS Variables <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Web Dev Fundamentals <span class="ticker-dot">◆</span></span>
+      <!-- duplicate for infinite scroll -->
+      <span class="ticker-item">Bootstrap 5 <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">PHP Back-End <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Git & GitHub <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Responsive Design <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Form Validation <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">GitHub Pages <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">CSS Variables <span class="ticker-dot">◆</span></span>
+      <span class="ticker-item">Web Dev Fundamentals <span class="ticker-dot">◆</span></span>
+    </div>
+  </div>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-5 fade-in">
+          <div class="about-visual">
+            <div class="about-img-wrapper">
+              <div class="about-img-placeholder">
+                <i class="bi bi-code-slash about-img-icon"></i>
+                <span class="about-img-text">Your Photo Here</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7 fade-in">
+          <p class="section-label">01 — About Us</p>
+          <h2 class="section-title">Junior Devs.<br>Serious <span class="accent">Builders.</span></h2>
+          <p class="section-sub mb-4">We are five students from BSIT 2.1 — Alina, John Carlos, John Isaac, Rossel, and Xandra — who turned three weeks of Web Development Fundamentals into a real, deployed, production-ready web application.</p>
+          <p class="section-sub">From responsive layouts with Bootstrap 5, to clean commit histories on GitHub, to a PHP-powered contact back-end — this project is our proof of work.</p>
+          <div class="about-skills">
+            <div class="skill-row">
+              <span class="skill-name">Bootstrap 5 / CSS</span>
+              <div class="skill-bar-wrap"><div class="skill-bar" data-width="90"></div></div>
+              <span class="skill-pct">90%</span>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">HTML5 Structure</span>
+              <div class="skill-bar-wrap"><div class="skill-bar" data-width="95"></div></div>
+              <span class="skill-pct">95%</span>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">JavaScript / Validation</span>
+              <div class="skill-bar-wrap"><div class="skill-bar" data-width="75"></div></div>
+              <span class="skill-pct">75%</span>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">Git & GitHub</span>
+              <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
+              <span class="skill-pct">85%</span>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">PHP Back-End</span>
+              <div class="skill-bar-wrap"><div class="skill-bar" data-width="65"></div></div>
+              <span class="skill-pct">65%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS ===== -->
+  <section id="projects">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-12 fade-in">
+          <p class="section-label">02 — Our Work</p>
+          <h2 class="section-title">Featured <span class="accent">Projects</span></h2>
+          <p class="section-sub">Each card below represents a core deliverable from our semester — real projects, real code, real results.</p>
+        </div>
+      </div>
+      <div class="row g-4">
+        <!-- Card 1 -->
+        <div class="col-md-4 fade-in">
+          <div class="project-card card">
+            <div class="card-img-area">
+              <div class="card-img-bg bg1">
+                <i class="bi bi-layout-text-window" style="color: rgba(232,255,71,0.5);"></i>
+              </div>
+              <span class="card-tag">Bootstrap 5</span>
+            </div>
+            <div class="card-body-custom">
+              <p class="card-number">01 / 03</p>
+              <h3 class="card-title-custom">Responsive UI</h3>
+              <p class="card-desc">A fully responsive multi-section layout featuring a sticky navbar, hero jumbotron, card grid, and modal — all built with Bootstrap 5 components.</p>
+            </div>
+            <div class="card-footer-custom">
+              <div class="card-tech">
+                <span class="tech-pill">HTML5</span>
+                <span class="tech-pill">Bootstrap</span>
+                <span class="tech-pill">CSS Vars</span>
+              </div>
+              <a href="#" class="card-link"><i class="bi bi-arrow-up-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-4 fade-in">
+          <div class="project-card card">
+            <div class="card-img-area">
+              <div class="card-img-bg bg2">
+                <i class="bi bi-git" style="color: rgba(255,107,53,0.6); font-size: 3.5rem;"></i>
+              </div>
+              <span class="card-tag">Git & GitHub</span>
+            </div>
+            <div class="card-body-custom">
+              <p class="card-number">02 / 03</p>
+              <h3 class="card-title-custom">Version Control</h3>
+              <p class="card-desc">Clean commit history with 7+ meaningful commits, feature branch workflow, and a live GitHub Pages deployment with a proper README and .gitignore.</p>
+            </div>
+            <div class="card-footer-custom">
+              <div class="card-tech">
+                <span class="tech-pill">Git</span>
+                <span class="tech-pill">GitHub</span>
+                <span class="tech-pill">Pages</span>
+              </div>
+              <a href="#" class="card-link"><i class="bi bi-arrow-up-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-4 fade-in">
+          <div class="project-card card">
+            <div class="card-img-area">
+              <div class="card-img-bg bg3">
+                <i class="bi bi-server" style="color: rgba(232,255,71,0.5);"></i>
+              </div>
+              <span class="card-tag">PHP</span>
+            </div>
+            <div class="card-body-custom">
+              <p class="card-number">03 / 03</p>
+              <h3 class="card-title-custom">PHP Back-End</h3>
+              <p class="card-desc">A contact.php script that receives POST data, sanitizes inputs with htmlspecialchars(), handles empty fields server-side, and returns a dynamic confirmation page.</p>
+            </div>
+            <div class="card-footer-custom">
+              <div class="card-tech">
+                <span class="tech-pill">PHP</span>
+                <span class="tech-pill">$_POST</span>
+                <span class="tech-pill">XAMPP</span>
+              </div>
+              <a href="#" class="card-link"><i class="bi bi-arrow-up-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section id="services">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-12 fade-in">
+          <p class="section-label">03 — What We Do</p>
+          <h2 class="section-title">Our <span class="accent">Capabilities</span></h2>
+        </div>
+      </div>
+      <div class="fade-in">
+        <div class="service-item">
+          <div class="service-icon"><i class="bi bi-phone"></i></div>
+          <div>
+            <p class="service-num">001</p>
+            <h3 class="service-title">Responsive Web Design</h3>
+            <p class="service-desc">Mobile-first layouts that look sharp at any screen size using Bootstrap 5's grid system, breakpoints, and utility classes.</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <div class="service-icon"><i class="bi bi-shield-check"></i></div>
+          <div>
+            <p class="service-num">002</p>
+            <h3 class="service-title">Form Validation & UX</h3>
+            <p class="service-desc">Client-side form validation with Bootstrap's built-in system and clear, friendly error feedback that guides users — not frustrates them.</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <div class="service-icon"><i class="bi bi-git"></i></div>
+          <div>
+            <p class="service-num">003</p>
+            <h3 class="service-title">Version Control & Deployment</h3>
+            <p class="service-desc">Professional Git workflows, feature branching, and live deployment on GitHub Pages so your project is always publicly accessible.</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <div class="service-icon"><i class="bi bi-terminal"></i></div>
+          <div>
+            <p class="service-num">004</p>
+            <h3 class="service-title">Server-Side Scripting</h3>
+            <p class="service-desc">PHP form handling with proper input sanitization — the last line of defense against XSS, even when JavaScript is disabled.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TEAM ===== -->
+  <section id="team">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-12 fade-in">
+          <p class="section-label">04 — The People</p>
+          <h2 class="section-title">Meet the <span class="accent">Team</span></h2>
+          <p class="section-sub">Five developers. One deadline. BSIT 2.1 represent! 🔥</p>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4 col-lg fade-in">
+          <div class="team-card">
+            <div class="team-avatar">A</div>
+            <p class="team-role">Team Lead / Bootstrap UI</p>
+            <h4 class="team-name">Alina Belano</h4>
+            <p class="team-bio">Led the team and built the overall Bootstrap layout — navbar, hero section, and CSS custom theming.</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg fade-in">
+          <div class="team-card">
+            <div class="team-avatar" style="background: var(--clr-accent2);">JC</div>
+            <p class="team-role">Git & Deployment</p>
+            <h4 class="team-name">John Carlos</h4>
+            <p class="team-bio">Managed the GitHub repository, commit history, feature branching, and GitHub Pages live deployment.</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg fade-in">
+          <div class="team-card">
+            <div class="team-avatar" style="background: #7c3aed;">JI</div>
+            <p class="team-role">PHP Back-End Dev</p>
+            <h4 class="team-name">John Isaac Protacio</h4>
+            <p class="team-bio">Wrote contact.php with $_POST handling, htmlspecialchars() sanitization, and server-side error handling.</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg fade-in">
+          <div class="team-card">
+            <div class="team-avatar" style="background: #0891b2;">R</div>
+            <p class="team-role">UI / Cards & Modal</p>
+            <h4 class="team-name">Rossel Garlit</h4>
+            <p class="team-bio">Designed the project card grid, contact modal, and wired up Bootstrap's form validation JS logic.</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg fade-in">
+          <div class="team-card">
+            <div class="team-avatar" style="background: #059669;">X</div>
+            <p class="team-role">Content & QA Tester</p>
+            <h4 class="team-name">Xandra Misa</h4>
+            <p class="team-bio">Handled all site content, wrote the README.md, tested responsiveness, and produced the demo video.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-cta-box fade-in">
+        <p class="section-label" style="justify-content: center;">05 — Let's Talk</p>
+        <h2 class="contact-big-title">READY TO<br><span>CONNECT?</span></h2>
+        <p class="contact-sub">Have a project in mind, or want to see our PHP back-end in action? Hit the button below and fill out our validated contact form.</p>
+        <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#contactModal">
+          <i class="bi bi-send"></i> Open Contact Form
+        </button>
+        <div class="contact-info-row">
+          <div class="contact-info-item">
+            <i class="bi bi-envelope-fill"></i>
+            <span>group@webdevfundamentals.edu</span>
+          </div>
+          <div class="contact-info-item">
+            <i class="bi bi-github"></i>
+            <a href="#" style="color: var(--clr-sub); text-decoration: none;">github.com/yourrepo</a>
+          </div>
+          <div class="contact-info-item">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>Philippines</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT MODAL ===== -->
+  <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="contactModalLabel">Send Us A Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mono mb-3" style="color: var(--clr-sub); font-size: 0.75rem; letter-spacing: 0.1em;">// All fields required. This form uses Bootstrap's client-side validation.</p>
+
+          <!-- Bootstrap Validated Form -->
+          <form class="needs-validation" id="contactForm" novalidate action="contact.php" method="POST">
+            <div class="row g-3">
+              <!-- Full Name -->
+              <div class="col-md-6">
+                <label class="form-label" for="fullName">Full Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fullName"
+                  name="name"
+                  placeholder="e.g. Juan dela Cruz"
+                  required
+                />
+                <div class="invalid-feedback">Please enter your full name.</div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <!-- Email -->
+              <div class="col-md-6">
+                <label class="form-label" for="emailAddr">Email Address</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="emailAddr"
+                  name="email"
+                  placeholder="you@example.com"
+                  required
+                />
+                <div class="invalid-feedback">Please enter a valid email address.</div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <!-- Subject -->
+              <div class="col-12">
+                <label class="form-label" for="subject">Subject</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="subject"
+                  name="subject"
+                  placeholder="What's this about?"
+                  required
+                />
+                <div class="invalid-feedback">Please provide a subject for your message.</div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <!-- Message -->
+              <div class="col-12">
+                <label class="form-label" for="message">Message <span style="color: var(--clr-muted);">(min. 20 characters)</span></label>
+                <textarea
+                  class="form-control"
+                  id="message"
+                  name="message"
+                  placeholder="Write your message here..."
+                  required
+                  minlength="20"
+                ></textarea>
+                <div class="invalid-feedback">Your message must be at least 20 characters long. Tell us more!</div>
+                <div class="valid-feedback">Perfect!</div>
+                <div class="form-text mono" id="charCount" style="color: var(--clr-muted); font-size: 0.68rem; margin-top: 0.4rem;">0 / 20 characters minimum</div>
+              </div>
+            </div>
+
+            <!-- Success banner (hidden by default) -->
+            <div id="successMsg" class="mt-3 p-3 d-none" style="background: rgba(232,255,71,0.08); border: 1px solid var(--clr-accent); border-radius: var(--radius);">
+              <p class="mono mb-0" style="font-size: 0.78rem; color: var(--clr-accent);">
+                <i class="bi bi-check-circle me-2"></i>Form validated! In production, this would submit to <strong>contact.php</strong> on your local server.
+              </p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn-primary-custom" id="submitBtn">
+            <i class="bi bi-send"></i> Send Message
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-brand mb-1">DEV<span>FOLIO</span></div>
+          <p class="footer-copy">Web Development Fundamentals — BSIT 2.1 | A.Y. 2025–2026 | Instructor: Edward James V. Grageda</p>
+        </div>
+        <div class="footer-links">
+          <a href="#">GitHub Repo</a>
+          <a href="#">Live Site</a>
+          <a href="#home">Back to Top ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ===== NAVBAR SCROLL =====
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ===== INTERSECTION OBSERVER — Fade In =====
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          entry.target.style.transitionDelay = (i * 0.08) + 's';
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ===== SKILL BARS =====
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+            bar.style.width = bar.getAttribute('data-width') + '%';
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) barObserver.observe(aboutSection);
+
+    // ===== BOOTSTRAP FORM VALIDATION =====
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMsg = document.getElementById('successMsg');
+    const msgArea = document.getElementById('message');
+    const charCount = document.getElementById('charCount');
+
+    // Live character count
+    msgArea.addEventListener('input', () => {
+      const len = msgArea.value.length;
+      charCount.textContent = len + ' / 20 characters minimum';
+      charCount.style.color = len >= 20 ? 'var(--clr-accent)' : 'var(--clr-muted)';
+    });
+
+    // Submit handler
+    submitBtn.addEventListener('click', () => {
+      form.classList.add('was-validated');
+
+      if (form.checkValidity()) {
+        successMsg.classList.remove('d-none');
+        submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Validated!';
+        submitBtn.style.background = 'var(--clr-accent)';
+      } else {
+        successMsg.classList.add('d-none');
+      }
+    });
+
+    // Reset modal on close
+    document.getElementById('contactModal').addEventListener('hidden.bs.modal', () => {
+      form.classList.remove('was-validated');
+      form.reset();
+      successMsg.classList.add('d-none');
+      submitBtn.innerHTML = '<i class="bi bi-send"></i> Send Message';
+      submitBtn.style.background = '';
+      charCount.textContent = '0 / 20 characters minimum';
+      charCount.style.color = 'var(--clr-muted)';
+    });
+
+    // ===== SMOOTH ACTIVE NAV =====
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.getAttribute('id');
+      });
+      navLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === '#' + current
+          ? 'var(--clr-accent)'
+          : '';
+      });
+    });
+  </script>
+</body>
+</html>
