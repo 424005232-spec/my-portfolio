@@ -1,3 +1,6 @@
+<!-- Structure and layout assisted with AI (Claude) for learning purposes. 
+     Reviewed, modified, and understood by the team. -->
+
 <?php
 // Get POST data
 $name    = isset($_POST['name'])    ? $_POST['name']    : '';
